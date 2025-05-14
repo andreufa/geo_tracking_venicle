@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">geotracking</string>
+    <string name="permission_rationale">Для корректной работы приложения требуются разрешения на отслеживание местоположения устройства и физической активности.</string>
+    <string name="grant_permissions">Предоставить разрешения</string>
 </resources>

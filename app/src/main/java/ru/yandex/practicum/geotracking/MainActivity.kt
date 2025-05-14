@@ -3,30 +3,30 @@ package ru.yandex.practicum.geotracking
 import android.Manifest
 import android.app.PendingIntent
 import android.content.ContentValues.TAG
-import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.ActivityRecognition
 import com.google.android.gms.location.ActivityTransition
 import com.google.android.gms.location.ActivityTransitionRequest
 import com.google.android.gms.location.DetectedActivity
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
+import ru.yandex.practicum.geotracking.ui.screen.FeatureThatRequiresPermissions
+import ru.yandex.practicum.geotracking.ui.screen.PlayerScreen
 import ru.yandex.practicum.geotracking.ui.theme.GeotrackingTheme
 
 class MainActivity : ComponentActivity() {
@@ -48,9 +48,14 @@ class MainActivity : ComponentActivity() {
     private val request = ActivityTransitionRequest(transitions)
 
     private val motionPendingIntent: PendingIntent by lazy {
-        val intent = Intent(TRANSITIONS_RECEIVER_ACTION)
-        intent.setPackage(this.packageName)
-        PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_MUTABLE)
+        val intent = Intent(this, MotionBroadcastReceiver::class.java)
+        intent.setAction(TRANSITIONS_RECEIVER_ACTION)
+        PendingIntent.getBroadcast(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,17 +64,19 @@ class MainActivity : ComponentActivity() {
             this,
             motionBroadcastReceiver,
             IntentFilter(TRANSITIONS_RECEIVER_ACTION),
-            ContextCompat.RECEIVER_EXPORTED
+            ContextCompat.RECEIVER_NOT_EXPORTED
         )
 
         enableEdgeToEdge()
         setContent {
             GeotrackingTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    PlayerScreen(
-                        motionState = motionState,
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    FeatureThatRequiresPermissions {
+                        PlayerScreen(
+                            motionState = motionState,
+                            modifier = Modifier.padding(innerPadding)
+                        )
+                    }
                 }
             }
         }
@@ -93,7 +100,7 @@ class MainActivity : ComponentActivity() {
     override fun onPause() {
         super.onPause()
         val task = ActivityRecognition.getClient(this)
-            .removeActivityTransitionUpdates(motionPendingIntent)
+            .removeActivityUpdates(motionPendingIntent)
         task.addOnSuccessListener {
             motionPendingIntent.cancel()
             Log.i(TAG, "Остановка отслеживания движения: Успешно")

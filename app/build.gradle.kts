@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.androidx.material.icon)
     implementation(libs.androidx.material.icon.extended)
     implementation(libs.google.play.location)
+    implementation(libs.accompanist.permissions)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

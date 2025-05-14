@@ -14,15 +14,18 @@ import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.location.GeofencingEvent
 import com.google.android.gms.location.Geofence
 
-class MotionBroadcastReceiver(private val callback:(Int)-> Unit) : BroadcastReceiver() {
+class MotionBroadcastReceiver(private val callback: (Int) -> Unit) : BroadcastReceiver() {
 
+    init {
+        Log.i(TAG, "MotionBroadcastReceiver created")
+    }
 
     override fun onReceive(context: Context, intent: Intent) {
-        Toast.makeText(context, "Registered activity", Toast.LENGTH_SHORT).show()
+        Log.i(TAG, "Registered activity in MotionBroadcastReceiver")
         if (ActivityTransitionResult.hasResult(intent)) {
             val result = ActivityTransitionResult.extractResult(intent)!!
             for (event in result.transitionEvents) {
-                if(event.transitionType == DetectedActivity.IN_VEHICLE) {
+                if (event.transitionType == DetectedActivity.IN_VEHICLE) {
                     callback.invoke(event.activityType)
                 }
             }
