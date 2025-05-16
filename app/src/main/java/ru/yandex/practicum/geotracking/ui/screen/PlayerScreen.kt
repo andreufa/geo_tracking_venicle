@@ -48,9 +48,7 @@ fun PlayerScreen(
         )
         Spacer(Modifier.size(32.dp))
         ButtonPanel(typeMotion == ActivityTransition.ACTIVITY_TRANSITION_EXIT)
-
     }
-
 }
 
 @Composable
