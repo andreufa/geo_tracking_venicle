@@ -50,19 +50,11 @@ class MainActivity : ComponentActivity() {
     }
     private val transitions = listOf(
         ActivityTransition.Builder()
-            .setActivityType(DetectedActivity.WALKING)
+            .setActivityType(DetectedActivity.IN_VEHICLE)
             .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
             .build(),
         ActivityTransition.Builder()
-            .setActivityType(DetectedActivity.WALKING)
-            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
-            .build(),
-        ActivityTransition.Builder()
-            .setActivityType(DetectedActivity.ON_FOOT)
-            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
-            .build(),
-        ActivityTransition.Builder()
-            .setActivityType(DetectedActivity.ON_FOOT)
+            .setActivityType(DetectedActivity.IN_VEHICLE)
             .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
             .build()
     )
@@ -92,22 +84,10 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 
                     FeatureThatRequiresPermissions {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Spacer(Modifier.size(48.dp))
-                            Button(onClick = {
-                                try {
-                                    motionPendingIntent.send()
-                                } catch (e: PendingIntent.CanceledException) {
-                                    Log.e(TAG, "PendingIntent отменен", e)
-                                }
-                            }) {
-                                Text("Pending Intent")
-                            }
-                            PlayerScreen(
-                                motionState = motionState,
-                                modifier = Modifier.padding(innerPadding)
-                            )
-                        }
+                        PlayerScreen(
+                            motionState = motionState,
+                            modifier = Modifier.padding(innerPadding)
+                        )
                     }
                 }
             }
