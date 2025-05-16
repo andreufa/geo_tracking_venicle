@@ -31,11 +31,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.ActivityRecognition
 import com.google.android.gms.location.ActivityTransition
 import com.google.android.gms.location.ActivityTransitionRequest
 import com.google.android.gms.location.DetectedActivity
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import ru.yandex.practicum.geotracking.ui.screen.FeatureThatRequiresPermissions
 import ru.yandex.practicum.geotracking.ui.screen.PlayerScreen
 import ru.yandex.practicum.geotracking.ui.theme.GeotrackingTheme
@@ -45,16 +48,27 @@ class MainActivity : ComponentActivity() {
     private val motionState = MutableStateFlow(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
     private val motionBroadcastReceiver = MotionBroadcastReceiver { activity ->
         Log.i(TAG, "MainActivity get from MotionBroadcastReceiver $activity")
-        Toast.makeText(this, "MainActivity get $activity", Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            delay(1000)
+            Toast.makeText(this@MainActivity, "MainActivity get $activity", Toast.LENGTH_LONG).show()
+        }
         motionState.value = activity
     }
     private val transitions = listOf(
         ActivityTransition.Builder()
-            .setActivityType(DetectedActivity.IN_VEHICLE)
+            .setActivityType(DetectedActivity.WALKING)
             .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
             .build(),
         ActivityTransition.Builder()
-            .setActivityType(DetectedActivity.IN_VEHICLE)
+            .setActivityType(DetectedActivity.WALKING)
+            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
+            .build(),
+        ActivityTransition.Builder()
+            .setActivityType(DetectedActivity.ON_FOOT)
+            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+            .build(),
+        ActivityTransition.Builder()
+            .setActivityType(DetectedActivity.ON_FOOT)
             .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
             .build()
     )
@@ -62,11 +76,14 @@ class MainActivity : ComponentActivity() {
     private val request = ActivityTransitionRequest(transitions)
 
     private val motionPendingIntent: PendingIntent by lazy {
+        val intent = Intent(TRANSITIONS_RECEIVER_ACTION).apply {
+            setPackage(this@MainActivity.packageName)
+        }
         PendingIntent.getBroadcast(
             this.applicationContext,
             0,
-            Intent(TRANSITIONS_RECEIVER_ACTION),
-            PendingIntent.FLAG_IMMUTABLE
+            intent,
+            PendingIntent.FLAG_MUTABLE
         )
     }
 

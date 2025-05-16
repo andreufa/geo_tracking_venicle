@@ -13,15 +13,13 @@ class MotionBroadcastReceiver(private val callback: (Int) -> Unit) : BroadcastRe
 
     override fun onReceive(context: Context, intent: Intent) {
         Log.i(TAG, "Registered activity in MotionBroadcastReceiver")
-        val res = ActivityTransitionResult.extractResult(intent)
-        Toast.makeText(context, "${intent.action}", Toast.LENGTH_SHORT).show()
-        Toast.makeText(context, "Result $res", Toast.LENGTH_LONG).show()
+//        Toast.makeText(context, "${intent.action}", Toast.LENGTH_SHORT).show()
         if (ActivityTransitionResult.hasResult(intent)) {
             val result = ActivityTransitionResult.extractResult(intent)!!
-            Toast.makeText(context, "Result $result", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Result ${result.transitionEvents}", Toast.LENGTH_LONG).show()
             for (event in result.transitionEvents) {
-                if (event.transitionType == DetectedActivity.IN_VEHICLE) {
-                    callback.invoke(event.activityType)
+                if (event.activityType == DetectedActivity.WALKING) {
+                    callback.invoke(event.transitionType)
                 }
             }
         }
