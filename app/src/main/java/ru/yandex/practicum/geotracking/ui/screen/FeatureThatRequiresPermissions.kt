@@ -37,8 +37,6 @@ import ru.yandex.practicum.geotracking.ui.theme.GeotrackingTheme
 fun FeatureThatRequiresPermissions(isPermissionGranted: @Composable () -> Unit) {
     val permissionsState = rememberMultiplePermissionsState(
         listOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACTIVITY_RECOGNITION
         )
     )

@@ -22,6 +22,7 @@ class MotionBroadcastReceiver(private val callback: (Int) -> Unit) : BroadcastRe
 
     override fun onReceive(context: Context, intent: Intent) {
         Log.i(TAG, "Registered activity in MotionBroadcastReceiver")
+        callback.invoke(999)
         if (ActivityTransitionResult.hasResult(intent)) {
             val result = ActivityTransitionResult.extractResult(intent)!!
             for (event in result.transitionEvents) {
