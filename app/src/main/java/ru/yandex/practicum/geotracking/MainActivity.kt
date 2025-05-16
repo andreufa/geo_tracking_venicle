@@ -88,15 +88,10 @@ class MainActivity : ComponentActivity() {
             .requestActivityTransitionUpdates(request, motionPendingIntent)
         task.addOnSuccessListener {
             Log.i(TAG, "Начало отслеживания движения: Успешно")
-            val intent = Intent().apply {
-                action = TRANSITIONS_RECEIVER_ACTION
-            }
-            sendOrderedBroadcast(intent, TRANSITIONS_RECEIVER_ACTION)
         }
         task.addOnFailureListener { e: Exception ->
             Log.e(TAG, "Начало отслеживания движения: Ошибка $e")
         }
-
     }
 
     @RequiresPermission(Manifest.permission.ACTIVITY_RECOGNITION)
